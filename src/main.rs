@@ -6,9 +6,6 @@ use ansi_term::Colour::Purple;
 use ansi_term::Colour::White;
 use ansi_term::Colour::Cyan;
 use ansi_term::Colour::Black;
-use std::io;
-use std::io::BufRead;
-use std::ptr::null;
 use rand::prelude::*;
 
 #[derive(Debug, Copy, Clone)]
@@ -38,7 +35,7 @@ impl Colors {
     }
 }
 
-fn colorExist(haystack: char) -> bool {
+fn color_exist(haystack: char) -> bool {
     let colors: Vec<Colors> = vec![Colors::RED, Colors::BLUE, Colors::GREEN, Colors::YELLOW, Colors::PURPLE, Colors::WHITE, Colors::BLACK, Colors::CYAN];
     for color in colors {
         if color.value().contains(haystack) {
@@ -48,7 +45,7 @@ fn colorExist(haystack: char) -> bool {
     return false;
 }
 
-fn getColor(haystack: char) -> Colors {
+fn get_color(haystack: char) -> Colors {
     let colors: Vec<Colors> = vec![Colors::RED, Colors::BLUE, Colors::GREEN, Colors::YELLOW, Colors::PURPLE, Colors::WHITE, Colors::BLACK, Colors::CYAN];
     for color in colors {
         if color.value().contains(haystack) {
@@ -58,12 +55,12 @@ fn getColor(haystack: char) -> Colors {
     return Colors::GREEN;
 }
 
-fn is_won(colors: Vec<Colors>, hiddenCombination: Vec<Colors>) -> bool {
+fn is_won(colors: Vec<Colors>, hidden_combination: Vec<Colors>) -> bool {
     if colors.len() == 0 {
         return false;
     }
-    for i in 0..hiddenCombination.len() {
-        if colors[i].value() != hiddenCombination[i].value() {
+    for i in 0..hidden_combination.len() {
+        if colors[i].value() != hidden_combination[i].value() {
             return false;
         }
     }
@@ -72,7 +69,7 @@ fn is_won(colors: Vec<Colors>, hiddenCombination: Vec<Colors>) -> bool {
 
 fn number_of_well_placed_pawns(secret: Vec<Colors>, guess: Vec<Colors>) -> i32 {
     let mut placed = 0;
-    if guess.len() == 0 {
+    if guess.is_empty() {
         return 0;
     }
     for i in 0..secret.len() {
@@ -83,15 +80,15 @@ fn number_of_well_placed_pawns(secret: Vec<Colors>, guess: Vec<Colors>) -> i32 {
     return placed;
 }
 
-fn fancy_print_guess(vectorColors: Vec<Colors>) {
-    for color in vectorColors {
+fn fancy_print_guess(vector_colors: Vec<Colors>) {
+    for color in vector_colors {
         print!("{}", color.value());
     }
     println!();
 }
 
 fn number_of_not_well_placed_pawns(secret: Vec<Colors>, guess: Vec<Colors>) -> i32 {
-    if guess.len() == 0 {
+    if guess.is_empty() {
         return secret.len() as i32;
     }
     let mut placed = 0;
@@ -104,28 +101,28 @@ fn number_of_not_well_placed_pawns(secret: Vec<Colors>, guess: Vec<Colors>) -> i
 }
 
 fn main() {
-    let baseColors: Vec<Colors> = vec![Colors::RED, Colors::BLUE, Colors::GREEN, Colors::CYAN, Colors::BLACK, Colors::WHITE, Colors::PURPLE, Colors::YELLOW];
+    let base_colors: Vec<Colors> = vec![Colors::RED, Colors::BLUE, Colors::GREEN, Colors::CYAN, Colors::BLACK, Colors::WHITE, Colors::PURPLE, Colors::YELLOW];
     let mut guess: Vec<Colors> = vec![];
     for i in 0..8 {
         let mut rng = rand::thread_rng();
-        guess.push(baseColors[rng.gen_range(0,8)]);
+        guess.push(base_colors[rng.gen_range(0,8)]);
     }
     fancy_print_guess(guess.to_vec());
-    let mut inputColor = Vec::new();
+    let mut input_color = Vec::new();
     let mut turn = 0;
     let mut error = 0;
     while true {
         error = 0;
         let mut line = String::new();
         println!("Try to guess ! Turn number {} :", turn);
-        let b1 = std::io::stdin().read_line(&mut line).unwrap();
+        let _b1 = std::io::stdin().read_line(&mut line).unwrap();
         line = line.replace("\n", "");
-        if line.len()== 0 {
+        if line.is_empty() {
             println!("Please type something");
         }
         for (i, c) in line.chars().enumerate() {
-            if colorExist(c) {
-                inputColor.push(getColor(c));
+            if color_exist(c) {
+                input_color.push(get_color(c));
             } else {
                 println!("Error, the color with key {} does'nt exist at index {}", c, i);
                 error = 1;
@@ -134,13 +131,13 @@ fn main() {
         if error == 0 {
             turn += 1;
         }
-        if (is_won(inputColor.to_vec(), guess.to_vec())) {
+        if is_won(input_color.to_vec(), guess.to_vec()) {
             println!("You WON ! ");
             break;
         }
-        let well_placed = number_of_well_placed_pawns(guess.to_vec(), inputColor.to_vec());
-        let not_well_placed = number_of_not_well_placed_pawns(guess.to_vec(), inputColor.to_vec());
-        fancy_print_guess(inputColor.to_vec());
+        let well_placed = number_of_well_placed_pawns(guess.to_vec(), input_color.to_vec());
+        let not_well_placed = number_of_not_well_placed_pawns(guess.to_vec(), input_color.to_vec());
+        fancy_print_guess(input_color.to_vec());
         println!("Number of well placed pawn, {}", well_placed);
         println!("Number of not well placed paws {}", not_well_placed);
     }

@@ -110,7 +110,6 @@ fn main() {
         let mut rng = rand::thread_rng();
         guess.push(baseColors[rng.gen_range(0,8)]);
     }
-    println!("{:?}", guess.to_vec());
     fancy_print_guess(guess.to_vec());
     let mut inputColor = Vec::new();
     let mut turn = 0;

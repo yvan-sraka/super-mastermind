@@ -10,23 +10,26 @@ fn fancy_print_guess(guess: &[Color]) -> String{
     let mut s = String::new();
     for x in guess {
         println!("test vector : {:?}", x);
-
-        match x {
-            Color::Yellow => s.push_str(&Yellow.paint("Y").to_string()),
-            Color::Cyan => s.push_str(&Cyan.paint("C").to_string()),
-            Color::Red => s.push_str(&Red.paint("R").to_string()),
-            Color::Green => s.push_str(&Green.paint("G").to_string()),
-            Color::Blue => s.push_str(&Blue.paint("B").to_string()),
-            Color::Purple => s.push_str(&Purple.paint("P").to_string()),
-            //rgb(255,0,255)
-            Color::Magenta => s.push_str(&Colour::RGB(255,0,255).paint("M").to_string()),
-            //rgb(255,165,0)
-            Color::Orange => s.push_str(&Colour::RGB(255,165,0).paint("O").to_string()),
-            Color::White => s.push_str(&White.paint("W").to_string()),
-        }
+        let mut letterColored = fancy_color_letter(x);
+        s.push_str(&letterColored);
     }
-
     return s;
+}
+
+fn fancy_color_letter(color: &Color) -> String{
+    match color {
+        Color::Yellow => return Yellow.paint("Y").to_string(),
+        Color::Cyan => return Cyan.paint("C").to_string(),
+        Color::Red => return Red.paint("R").to_string(),
+        Color::Green => return Green.paint("G").to_string(),
+        Color::Blue => return Blue.paint("B").to_string(),
+        Color::Purple => return Purple.paint("P").to_string(),
+        //rgb(255,0,255)
+        Color::Magenta => return Colour::RGB(255,0,255).paint("M").to_string(),
+        //rgb(255,165,0)
+        Color::Orange => return Colour::RGB(255,165,0).paint("O").to_string(),
+        Color::White => return White.paint("W").to_string(),
+    };
 }
 
 fn main() {

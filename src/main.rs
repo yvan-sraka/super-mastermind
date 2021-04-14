@@ -59,6 +59,9 @@ fn getColor(haystack: char) -> Colors {
 }
 
 fn is_won(colors: Vec<Colors>, hiddenCombination: Vec<Colors>) -> bool {
+    if colors.len() == 0 {
+        return false;
+    }
     for i in 0..hiddenCombination.len() {
         if colors[i].value() != hiddenCombination[i].value() {
             return false;
@@ -69,6 +72,9 @@ fn is_won(colors: Vec<Colors>, hiddenCombination: Vec<Colors>) -> bool {
 
 fn number_of_well_placed_pawns(secret: Vec<Colors>, guess: Vec<Colors>) -> i32 {
     let mut placed = 0;
+    if guess.len() == 0 {
+        return 0;
+    }
     for i in 0..secret.len() {
         if guess[i].value() == secret[i].value() {
             placed += 1;
@@ -85,6 +91,9 @@ fn fancy_print_guess(vectorColors: Vec<Colors>) {
 }
 
 fn number_of_not_well_placed_pawns(secret: Vec<Colors>, guess: Vec<Colors>) -> i32 {
+    if guess.len() == 0 {
+        return secret.len() as i32;
+    }
     let mut placed = 0;
     for i in 0..secret.len() {
         if guess[i].value() != secret[i].value() {
@@ -112,6 +121,9 @@ fn main() {
         println!("Try to guess ! Turn number {} :", turn);
         let b1 = std::io::stdin().read_line(&mut line).unwrap();
         line = line.replace("\n", "");
+        if line.len()== 0 {
+            println!("Please type something");
+        }
         for (i, c) in line.chars().enumerate() {
             if colorExist(c) {
                 inputColor.push(getColor(c));

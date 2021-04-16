@@ -30,7 +30,7 @@ fn main() {
     let mut rng = thread_rng();
 
     for i in 0..=4 {
-        let val = match rng.gen_range(0..=6) { // rand 0.8
+        let val = match rng.gen_range(0..=6) {
             0 => Color::R,
             1 => Color::G,
             2 => Color::B,

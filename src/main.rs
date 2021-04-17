@@ -1,6 +1,9 @@
 use ansi_term::Colour;
+use std::io;
+use std::fs::File;
+use std::io::{Seek, SeekFrom, Read};
 
-fn main() {
+fn main() -> io::Result<()> {
     #[derive(Debug, PartialEq)]
     enum Color {
         Cyan,
@@ -14,8 +17,6 @@ fn main() {
     }
 
     fn fancy_print_guess(guess: &[Color]) {
-        // let attribute = value.GetAttributeOrDefault<DisplayAttribute>();
-        // println!("{:?}", guess);
         for color in guess {
             match color {
                 Color::Yellow => print!("{}", Colour::Yellow.paint("Y")),
@@ -30,9 +31,32 @@ fn main() {
         }
     }
 
+    fn factory_print_guess(proposal: String){
+
+    }
+
+
     let guess:Vec<Color> = vec![Color::Cyan,Color::Green,Color::Black,Color::Yellow,Color::Purple];
-    // loop {
-    fancy_print_guess(&guess);
-    fancy_print_guess(&[Color::Red, Color::Purple, Color::Black, Color::Yellow, Color::Green])
-    // }
+
+
+
+    let mut input = String::new();
+    io::stdin().read_line(&mut input)?;
+    factory_print_guess(input);
+
+
+    // fancy_print_guess(&guess);
+    // fancy_print_guess(&[Color::Red, Color::Purple, Color::Black, Color::Yellow, Color::Green]);
+
+/*    loop {
+        fancy_print_guess(&guess);
+        let mut input = String::new();
+        io::stdin().read_line(&mut input)?;
+
+        if input.trim() == "CGBYP"{
+            break;
+        }
+    }*/
+    Ok(())
+
 }

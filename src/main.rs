@@ -1,17 +1,20 @@
 mod colors;
-
+extern crate rand; // 0.4.2
 use crate::colors::colors::Color;
 use ansi_term::Colour;
 use std::fmt;
 use std::io::stdout;
 use std::io::{self};
-
+use std::ops::Deref;
+use std::borrow::Borrow;
+use rand::Rng; // 0.8.0
 
 const GUESS_SIZE: usize = 5;
 
 #[derive(Debug, Clone)]
 struct ParseColorError {
-    color_char: char
+    color_char: char,
+    message: String,
 }
 impl fmt::Display for ParseColorError {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
@@ -19,12 +22,16 @@ impl fmt::Display for ParseColorError {
     }
 }
 
-// struct BadInputSize;
-// impl fmt::Display for BadInputSize {
-//     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-//         write!(f, "{} isn't a known Color enum value", self.color_char)
-//     }
-// }
+struct BadInputSize {
+    waited_size: usize,
+    item_size: usize,
+}
+
+impl fmt::Display for BadInputSize {
+    fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
+        write!(f, "{} is not a valid size. item of length {} waited.", self.item_size, self.waited_size)
+    }
+}
 
 
 
@@ -38,7 +45,21 @@ fn character_to_color(character: char) -> Result<Color, ParseColorError> {
         'O' => Ok(Color::ORANGE),
         'C' => Ok(Color::CYAN),
         'W' => Ok(Color::WHITE),
-        _ => Err(ParseColorError { color_char: character })
+        _ => Err(ParseColorError { message: "Undefined Character".to_string(), color_char: character })
+    }
+}
+
+fn get_random_color() -> Color {
+    let mut rng = rand::thread_rng();
+    match rng.gen_range(0..=8) {
+        0 => Color::BLUE,
+        1 => Color::RED,
+        2 => Color::PURPLE,
+        3 => Color::GREEN,
+        4 => Color::YELLOW,
+        5 => Color::ORANGE,
+        6 => Color::CYAN,
+        _ => Color::WHITE
     }
 }
 
@@ -81,7 +102,7 @@ fn input_string_to_color_guess(input: &str) -> Result<Vec<Color>, ParseColorErro
     return Ok(ret);
 }
 
-fn get_guesses_result(user_colors: Vec<Color>, guesses: Vec<Color>) -> (u8, u8) {
+fn get_guesses_result(user_colors: &Vec<Color>, guesses: &Vec<Color>) -> (u8, u8) {
     let mut matches = 0;
     let mut misplaced = 0;
     let mut well_placed_index: [bool; GUESS_SIZE] = [false; GUESS_SIZE];
@@ -117,44 +138,52 @@ fn print_turn_result(p0: (u8, u8)) {
 }
 
 fn main() {
-    println!("Hello, world!");
     let guess = vec![
-        Color::PURPLE,
-        Color::RED,
-        Color::GREEN,
-        Color::ORANGE,
-        Color::YELLOW,
-        // Color::BLUE,
-        // Color::WHITE,
-        // Color::CYAN
+        get_random_color(),
+        get_random_color(),
+        get_random_color(),
+        get_random_color(),
+        get_random_color(),
     ];
 
-    println!("simple print");
-    println!("{:?}", guess);
-    println!("fancy print");
-    fancy_print_guess(&guess);
-
     let mut game_over = false;
-
     let mut turn = 0;
 
     while !game_over {
+        print_turn_starting_info();
         turn += 1;
 
         let user_input = read_line();
 
-        let user_colors: Vec<Color> = input_string_to_color_guess(&user_input).unwrap();
-
-        println!("{}", user_input);
-
-        let guesses: (u8, u8) = get_guesses_result(user_colors.to_vec(), guess.to_vec());
-
-        if guesses.0 == 5 {
-            game_over = true;
+        if user_input.len() != 5 {
+            println!("{}", BadInputSize { item_size: user_input.len(), waited_size: 5})
         } else {
-            print_turn_result(guesses);
+            println!("{}", user_input);
+
+            let user_colors: Result<Vec<Color>, ParseColorError> = input_string_to_color_guess(&user_input);
+
+            if(user_colors.is_err()) {
+
+                println!("{}", user_colors.unwrap_err());
+
+            } else {
+                let user_colors_value = user_colors.unwrap();
+                fancy_print_guess(&user_colors_value);
+
+                let guesses: (u8, u8) = get_guesses_result(&user_colors_value, &guess.to_vec());
+
+                if guesses.0 == 5 {
+                    game_over = true;
+                } else {
+                    print_turn_result(guesses);
+                }
+            }
         }
     }
 
     greeting_player(turn);
+}
+
+fn print_turn_starting_info() {
+    println!("Tentez de trouver la combinaison de {} couleurs !", GUESS_SIZE);
 }

@@ -1,13 +1,15 @@
-mod colors;
-extern crate rand; // 0.4.2
-use crate::colors::colors::Color;
-use ansi_term::Colour;
+extern crate rand;
+
 use std::fmt;
-use std::io::stdout;
 use std::io::{self};
-use std::ops::Deref;
-use std::borrow::Borrow;
-use rand::Rng; // 0.8.0
+use ansi_term::Colour;
+use rand::Rng;
+
+// 0.4.2
+use crate::colors::colors::Color;
+
+mod colors;
+// 0.8.0
 
 const GUESS_SIZE: usize = 5;
 
@@ -32,8 +34,6 @@ impl fmt::Display for BadInputSize {
         write!(f, "{} is not a valid size. item of length {} waited.", self.item_size, self.waited_size)
     }
 }
-
-
 
 fn character_to_color(character: char) -> Result<Color, ParseColorError> {
     match character {
@@ -137,6 +137,10 @@ fn print_turn_result(p0: (u8, u8)) {
     println!("{} mal placé(s)", p0.1);
 }
 
+fn print_turn_starting_info() {
+    println!("Tentez de trouver la combinaison de {} couleurs !", GUESS_SIZE);
+}
+
 fn main() {
     let guess = vec![
         get_random_color(),
@@ -145,6 +149,9 @@ fn main() {
         get_random_color(),
         get_random_color(),
     ];
+
+    println!("Une sélection aléatoire de {} couleurs aléatoires a été générées", GUESS_SIZE);
+
 
     let mut game_over = false;
     let mut turn = 0;
@@ -162,7 +169,7 @@ fn main() {
 
             let user_colors: Result<Vec<Color>, ParseColorError> = input_string_to_color_guess(&user_input);
 
-            if(user_colors.is_err()) {
+            if user_colors.is_err() {
 
                 println!("{}", user_colors.unwrap_err());
 
@@ -182,8 +189,4 @@ fn main() {
     }
 
     greeting_player(turn);
-}
-
-fn print_turn_starting_info() {
-    println!("Tentez de trouver la combinaison de {} couleurs !", GUESS_SIZE);
 }

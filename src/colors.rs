@@ -1,8 +1,6 @@
 pub mod colors {
     use std::fmt;
 
-    use rand::Rng;
-
     #[derive(Debug, PartialEq, Eq, Clone)]
     pub enum Color {
         BLUE,

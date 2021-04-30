@@ -45,7 +45,7 @@ fn character_to_color(character: char) -> Result<Color, ParseColorError> {
         'O' => Ok(Color::ORANGE),
         'C' => Ok(Color::CYAN),
         'W' => Ok(Color::WHITE),
-        _ => Err(ParseColorError { message: "Undefined Character".to_string(), color_char: character })
+        _ => Err(ParseColorError { message: "Undefined Color".to_string(), color_char: character })
     }
 }
 
@@ -138,7 +138,7 @@ fn print_turn_result(p0: (u8, u8)) {
 }
 
 fn print_turn_starting_info() {
-    println!("Tentez de trouver la combinaison de {} couleurs !", GUESS_SIZE);
+    println!("Tentez de trouver la combinaison de {} couleurs ! Couleur possible : BRPGYOCW", GUESS_SIZE);
 }
 
 fn main() {

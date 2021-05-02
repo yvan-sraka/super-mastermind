@@ -6,6 +6,8 @@
   <component name="ChangeListManager">
     <list default="true" id="a0165d5f-20db-4f61-a0a3-5c9f3742ef58" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.lock" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.lock" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Cargo.toml" beforeDir="false" afterPath="$PROJECT_DIR$/Cargo.toml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main.rs" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.rs" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -39,6 +41,19 @@
     <property name="settings.editor.selected.configurable" value="preferences.keymap" />
   </component>
   <component name="RunManager">
+    <configuration default="true" type="ArquillianTestNG" factoryName="" nameIsGenerated="true">
+      <option name="arquillianRunConfiguration">
+        <value>
+          <option name="containerStateName" value="" />
+        </value>
+      </option>
+      <option name="TEST_OBJECT" value="CLASS" />
+      <properties />
+      <listeners />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="Run" type="CargoCommandRunConfiguration" factoryName="Cargo Command">
       <option name="command" value="run --package super-mastermind --bin super-mastermind" />
       <option name="workingDirectory" value="file://$PROJECT_DIR$" />
@@ -73,7 +88,11 @@
       <workItem from="1618580133867" duration="704000" />
       <workItem from="1618596445450" duration="6823000" />
       <workItem from="1618604354713" duration="8000" />
-      <workItem from="1618679006521" duration="11000" />
+      <workItem from="1618679006521" duration="1805000" />
+      <workItem from="1619805915719" duration="50000" />
+      <workItem from="1619805995944" duration="36000" />
+      <workItem from="1619958719627" duration="1122000" />
+      <workItem from="1619968121938" duration="1971000" />
     </task>
     <servers />
   </component>

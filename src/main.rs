@@ -1,65 +1,154 @@
-//Write your own function fancy_print_guess(guess: &[Color]) to display combination (for e.g. represent each color with a different capital letter):
-mod color;
-use color::Color;
-use ansi_term::{Style, Colour::*};
 use ansi_term::Colour;
-use std::io::{self, Read};
+use std::io;
+use rand::prelude::*;
 
-// fancy_print_guess(&[Color::Red, Color::Red, Color::Blue, Color::Yellow, Color::Green]);
-//ouput `RRBYG`
-fn fancy_print_guess(guess: &[Color]) -> String{
-    let mut s = String::new();
-    for x in guess {
-        println!("test vector : {:?}", x);
-        let mut letter_colored = fancy_color_letter(x);
-        s.push_str(&letter_colored);
-    }
-    return s;
+const LETTERS: [char; 8] = ['R', 'G', 'B', 'Y', 'C', 'P', 'O', 'W'];
+
+#[derive(Debug)]
+#[derive(PartialEq)]
+pub enum Color{
+    Red(),
+    Green(),
+    Blue(),
+    Yellow(),
+    Cyan(),
+    Purple(),
+    Orange(),
+    White()
 }
 
+//get a Color and return a char with color
 fn fancy_color_letter(color: &Color) -> String{
     match color {
-        Color::Yellow => return Yellow.paint("Y").to_string(),
-        Color::Cyan => return Cyan.paint("C").to_string(),
-        Color::Red => return Red.paint("R").to_string(),
-        Color::Green => return Green.paint("G").to_string(),
-        Color::Blue => return Blue.paint("B").to_string(),
-        Color::Purple => return Purple.paint("P").to_string(),
-        //rgb(255,0,255)
-        Color::Magenta => return Colour::RGB(255,0,255).paint("M").to_string(),
-        //rgb(255,165,0)
-        Color::Orange => return Colour::RGB(255,165,0).paint("O").to_string(),
-        Color::White => return White.paint("W").to_string(),
-    };
+        Color::Red() => Colour::RGB(255, 0, 0).paint("R").to_string(),
+        Color::Green() => Colour::RGB(0, 255, 0).paint("G").to_string(),
+        Color::Blue() => Colour::RGB(0, 0, 255).paint("B").to_string(),
+        Color::Yellow() => Colour::RGB(255, 255, 0).paint("Y").to_string(),
+        Color::Cyan() => Colour::RGB(0, 255, 255).paint("C").to_string(),
+        Color::Purple() => Colour::RGB(255, 0, 255).paint("P").to_string(),
+        Color::Orange() => Colour::RGB(255, 127, 0).paint("O").to_string(),
+        Color::White() => Colour::RGB(255, 255, 255).paint("W").to_string()
+    }
 }
 
-fn main() -> io::Result<()> {
-    println!("test enum {:?}", Color::Yellow);
+//print string
+fn fancy_print_guess(guess: &[Color]){
+    for x in guess{
+        print!("{}", fancy_color_letter(x));
+    }
+    print!("\n");
+}
 
-    //générer automatiquement
-    let mut guess:Vec<Color> = Vec::new();
-    guess.push(Color::Yellow);
-    guess.push(Color::Cyan);
-    guess.push(Color::Red);
-    guess.push(Color::Green);
-    guess.push(Color::Blue);
+//take a letter and return the corresponding Color from the enum
+fn color_enum_from_letter(letter: char) -> Color{
+    match letter {
+        'R' => Color::Red(),
+        'G' => Color::Green(),
+        'B' => Color::Blue(),
+        'Y' => Color::Yellow(),
+        'C' => Color::Cyan(),
+        'P' => Color::Purple(),
+        'O' => Color::Orange(),
+        'W' => Color::White(),
+        _ => Color::White()
+    }
+}
 
-    println!("test vector : {:?}", guess[1]);
-    let color_to_guess = fancy_print_guess(&guess);
-    println!("colors to guess : {}", color_to_guess);
+//compare guess and answer, return true if the vec are the same
+fn compare_vec(answer: &Vec<Color>, guess: &Vec<Color>) -> bool{
+    if answer.len() != guess.len() {
+        return false;
+    } else {
+        for i in 0..5 {
+            if answer[i] != guess[i]{
+                return false;
+            }
+        }
+    }
+    return true;
+}
 
-    //faire une boucle qui demande une combinaison de lettres
-    //Make an infinite loop which at each turn: read a string and print it!
+//generate a Vec with random color
+fn answer_generator() -> Vec<Color>{
+    let mut answer: Vec<Color> = Vec::new();
 
-    let exit = false;
+    while answer.len() <= 4 {
+        let mut rng = rand::thread_rng();
+        let rand_number = rng.gen_range(0..8);
 
-    fn main() -> io::Result<()> {
-        let mut buffer = String::new();
-        let stdin = io::stdin();
-        let mut handle = stdin.lock();
+        answer.push(color_enum_from_letter(LETTERS[rand_number]))
 
-        handle.read_to_string(&mut buffer)?;
-        Ok(())
+    }
+    return answer;
+}
+
+fn main(){
+    //creation of answer
+    let answer: Vec<Color> = answer_generator();
+
+    fancy_print_guess(&answer);
+
+    let mut count: u8 = 0;
+
+    loop {
+        //vector that will be use to build the guess from the player input
+        let mut guess: Vec<Color> = Vec::new();
+        //if the player input is incorrect, is_input_correct will be false 
+        let mut is_input_correct = true;
+
+        println!("It's the round : {}", count);
+
+        println!("Type 5 letters in this range : [R, G, B, Y, C, P, O, W]");
+        //create string
+        let mut comb = String::new();
+        //put the stdin inside comb string
+        io::stdin().read_line(&mut comb);
+
+        //pop the last cha that is a ghost char that can't be work with
+        comb.pop();
+
+        println!("You typed this : {}", comb);
+
+        //check that the input is 5 char long
+        if comb.chars().count() != 5 {
+            is_input_correct = false;
+        }
+
+        //iterate the input in uppercase
+        for letter in comb.to_uppercase().chars() {
+            //break if a char is not contains in the LETTER vec constant
+            if !LETTERS.contains(&letter){
+                is_input_correct = false;
+                break;
+            }
+
+        }
+
+        //pass if the input is correct
+        if is_input_correct {
+            //round + 1
+            count = count + 1;
+            //iterate the input in uppercase
+            for letter in comb.to_uppercase().chars() {
+                //push each char inside the guess: Vec<Color> 
+                guess.push(color_enum_from_letter(letter));
+            }
+            
+            fancy_print_guess(&guess);
+
+            if compare_vec(&answer, &guess){
+                println!("You guessed the answer ! Well done.");
+                break;
+            } else {
+                println!("Wrong try again.");
+            }
+
+        } else {
+            println!("a nice error message.");
+            println!("Wrong input.");
+            println!("The count has not been increased.");
+        }
+
     }
 
 }

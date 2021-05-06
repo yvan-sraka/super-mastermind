@@ -18,20 +18,6 @@ pub enum Color{
     Empty()
 }
 
-// //get a Color and return a char with color
-// fn fancy_color_letter(color: &Color) -> String{
-//     match color {
-//         Color::Red() => Colour::RGB(255, 0, 0).paint("R").to_string(),
-//         Color::Green() => Colour::RGB(0, 255, 0).paint("G").to_string(),
-//         Color::Blue() => Colour::RGB(0, 0, 255).paint("B").to_string(),
-//         Color::Yellow() => Colour::RGB(255, 255, 0).paint("Y").to_string(),
-//         Color::Cyan() => Colour::RGB(0, 255, 255).paint("C").to_string(),
-//         Color::Purple() => Colour::RGB(255, 0, 255).paint("P").to_string(),
-//         Color::Orange() => Colour::RGB(255, 127, 0).paint("O").to_string(),
-//         Color::White() => Colour::RGB(255, 255, 255).paint("W").to_string()
-//     }
-// }
-
 fn fancy_color_letter(color: &Color) -> String{
     match color {
         Color::Red() => Colour::RGB(255, 0, 0).bold().paint("R").to_string(),
@@ -45,7 +31,6 @@ fn fancy_color_letter(color: &Color) -> String{
         Color::Empty() => String::from("Empty")
     }
 }
-
 
 //print string
 fn fancy_print_guess(guess: &[Color]){
@@ -141,7 +126,6 @@ fn number_of_not_well_placed_pawns(secret: &[Color], guess: &[Color]) -> i32{
             }
         }
     }
-
     return counter;
 }
 
@@ -228,22 +212,21 @@ fn main(){
                     }
 
                 } else {
-                    println!("Type 5 letters in this range : ");
-                    print_rules();
                     println!("Wrong input.");
                     println!("The count has not been increased.");
+                    println!("Type 5 letters in this range : ");
+                    print_rules();
                     println!();
                 }
             }
             Err(e) => {
                 println!("{}", e);
-                println!("Type 5 letters in this range : ");
-                print_rules();
                 println!("Wrong input.");
                 println!("The count has not been increased.");
+                println!("Type 5 letters in this range : ");
+                print_rules();
                 println!();
             }
         }
     }
-
 }

@@ -160,11 +160,17 @@ fn main(){
     //creation of answer
     let answer: Vec<Color> = answer_generator();
 
+    println!();
+    println!("---- Print for debug only ----");
+    print!("      Answer is : ");
     fancy_print_guess(&answer);
+    println!("---- Print for debug only ----");
+    println!();
 
     let mut count: u8 = 0;
 
-    println!("Type 5 letters in this range : {:?}", print_rules());
+    println!("Type 5 letters in this range :");
+    print_rules();
     loop {
         //vector that will be use to build the guess from the player input
         let mut guess: Vec<Color> = Vec::new();
@@ -176,61 +182,68 @@ fn main(){
         //create string
         let mut input = String::new();
         //put the stdin inside input string
+        // io::stdin().read_line(&mut input);
         match io::stdin().read_line(&mut input) {
-            Ok(_) => continue,
+            Ok(_) => {
+
+                //pop the last cha that is a ghost char that can't be work with
+                input.pop();
+
+                //check that the input is 5 char long
+                if input.chars().count() != 5 {
+                    is_input_correct = false;
+                }
+
+                //iterate the input in uppercase
+                for letter in input.to_uppercase().chars() {
+                    //break if a char is not contains in the LETTER vec constant
+                    if !LETTERS.contains(&letter){
+                        is_input_correct = false;
+                        break;
+                    }
+                }
+
+                //pass if the input is correct
+                if is_input_correct {
+                    //round + 1
+                    count = count + 1;
+                    //iterate the input in uppercase
+                    for letter in input.to_uppercase().chars() {
+                        //push each char inside the guess: Vec<Color>
+                        guess.push(color_enum_from_letter(letter));
+                    }
+
+                    fancy_print_guess(&guess);
+
+                    if compare_vec(&answer, &guess){
+                        println!("You guessed the answer! Well done.");
+                        println!("You tried {} time(s).", count);
+                        break;
+                    } else {
+                        println!("Wrong try again.");
+
+                        println!("There is {} well placed pawns.", number_of_well_placed_pawns(&answer, &guess));
+                        println!("There is {} not well placed pawns.", number_of_not_well_placed_pawns(&answer, &guess));
+                        println!();
+                    }
+
+                } else {
+                    println!("Type 5 letters in this range : ");
+                    print_rules();
+                    println!("Wrong input.");
+                    println!("The count has not been increased.");
+                    println!();
+                }
+            }
             Err(e) => {
                 println!("{}", e);
-            }
-        }
-
-        //pop the last cha that is a ghost char that can't be work with
-        input.pop();
-
-        //check that the input is 5 char long
-        if input.chars().count() != 5 {
-            is_input_correct = false;
-        }
-
-        //iterate the input in uppercase
-        for letter in input.to_uppercase().chars() {
-            //break if a char is not contains in the LETTER vec constant
-            if !LETTERS.contains(&letter){
-                is_input_correct = false;
-                break;
-            }
-        }
-
-        //pass if the input is correct
-        if is_input_correct {
-            //round + 1
-            count = count + 1;
-            //iterate the input in uppercase
-            for letter in input.to_uppercase().chars() {
-                //push each char inside the guess: Vec<Color> 
-                guess.push(color_enum_from_letter(letter));
-            }
-            
-            fancy_print_guess(&guess);
-
-            if compare_vec(&answer, &guess){
-                println!("You guessed the answer! Well done.");
-                println!("You tried {} time(s).", count);
-                break;
-            } else {
-                println!("Wrong try again.");
-
-                println!("There is {} well placed pawns.", number_of_well_placed_pawns(&answer, &guess));
-                println!("There is {} not well placed pawns.", number_of_not_well_placed_pawns(&answer, &guess));
+                println!("Type 5 letters in this range : ");
+                print_rules();
+                println!("Wrong input.");
+                println!("The count has not been increased.");
                 println!();
             }
-
-        } else {
-            println!("Type 5 letters in this range : {:?}", print_rules());
-            println!("Wrong input.");
-            println!("The count has not been increased.");
-            println!();
         }
-
     }
 
 }

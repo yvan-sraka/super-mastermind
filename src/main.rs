@@ -44,6 +44,24 @@ fn fancy_print_guess(guess: &[Color]) {
     println!("{}", ANSIStrings(&vec_colors));
 }
 
+fn start_game() {
+    use std::io::{stdin, stdout, Write};
+    let mut number_try = 3;
+    loop {
+        if number_try <= 0 {
+            break;
+        }
+        let mut s = String::new();
+        let _ = stdout().flush();
+        stdin()
+            .read_line(&mut s)
+            .expect("Did not enter a correct string");
+        println!("{}", s);
+
+        number_try = number_try - 1;
+    }
+}
+
 fn main() {
     let guess = vec![
         Color::Orange,
@@ -56,4 +74,6 @@ fn main() {
         Color::Purple,
     ];
     fancy_print_guess(&guess);
+
+    start_game();
 }

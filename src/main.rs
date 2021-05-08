@@ -88,21 +88,35 @@ fn get_str_colors_stdin() -> String {
     return s;
 }
 
-fn compare_current_colors_to_guess_colors(
+fn number_of_well_placed_pawns(secret: &[Color], guess: &[Color]) -> i32 {
+    let mut number_well_placed = 0;
+    for (i, _color) in guess.iter().enumerate() {
+        if _color == &secret[i] {
+            number_well_placed = number_well_placed + 1;
+        }
+    }
+    return number_well_placed;
+}
+
+fn compare_current_colors_to_secret_colors(
     current_colors: Vec<Color>,
-    guess_colors: Vec<Color>,
+    secret_colors: Vec<Color>,
 ) -> bool {
     let mut result = true;
-
+    let number_well_placed_pawns = number_of_well_placed_pawns(&secret_colors, &current_colors);
+    if number_well_placed_pawns as usize == secret_colors.len() {
+        return true;
+    }
+    println!("number_well_placed_pawns : {}", number_well_placed_pawns);
     for (i, _color) in current_colors.iter().enumerate() {
-        if guess_colors[i] != *_color {
+        if secret_colors[i] != *_color {
             result = false;
         }
     }
     return result;
 }
 
-fn start_game(guess_colors: Vec<Color>) {
+fn start_game(secret_colors: Vec<Color>) {
     let mut number_try = 1;
     loop {
         let str_colors = get_str_colors_stdin();
@@ -110,21 +124,22 @@ fn start_game(guess_colors: Vec<Color>) {
         match result {
             Ok(vec_color) => {
                 fancy_print_guess(&vec_color);
-                if compare_current_colors_to_guess_colors(vec_color, guess_colors.clone()) {
+                if compare_current_colors_to_secret_colors(vec_color, secret_colors.clone()) {
                     break;
                 }
                 number_try = number_try + 1;
             }
             Err(err_message) => println!("{}", err_message),
         }
+        println!("\n");
     }
     println!(
-        "Congrat ! You figure out the guess colors with {} try !",
+        "Congrat ! You figure out the secret colors with {} try !",
         number_try
     );
 }
 
 fn main() {
-    let guess_colors = vec![Color::Blue, Color::Green, Color::White];
-    start_game(guess_colors);
+    let secret_colors = vec![Color::Blue, Color::Green, Color::White];
+    start_game(secret_colors);
 }

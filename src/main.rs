@@ -1,9 +1,8 @@
 use ansi_term::Colour::{Blue, Cyan, Green, Purple, Red, White, Yellow, RGB};
 use ansi_term::{ANSIString, ANSIStrings};
 use std::fmt;
-use std::vec;
 
-#[derive(Debug)]
+#[derive(Debug, Clone, PartialEq)]
 enum Color {
     White,
     Orange,
@@ -44,36 +43,88 @@ fn fancy_print_guess(guess: &[Color]) {
     println!("{}", ANSIStrings(&vec_colors));
 }
 
-fn start_game() {
-    use std::io::{stdin, stdout, Write};
-    let mut number_try = 3;
-    loop {
-        if number_try <= 0 {
-            break;
-        }
-        let mut s = String::new();
-        let _ = stdout().flush();
-        stdin()
-            .read_line(&mut s)
-            .expect("Did not enter a correct string");
-        println!("{}", s);
-
-        number_try = number_try - 1;
+fn map_str_color_to_enum(str_color: &str) -> Result<Color, String> {
+    match str_color.to_lowercase().as_str() {
+        "white" => Ok(Color::White),
+        "orange" => Ok(Color::Orange),
+        "blue" => Ok(Color::Blue),
+        "green" => Ok(Color::Green),
+        "red" => Ok(Color::Red),
+        "yellow" => Ok(Color::Yellow),
+        "purple" => Ok(Color::Purple),
+        "cyan" => Ok(Color::Cyan),
+        _ => Err(str_color.to_lowercase()),
     }
 }
 
-fn main() {
-    let guess = vec![
-        Color::Orange,
-        Color::White,
-        Color::Red,
-        Color::Yellow,
-        Color::Green,
-        Color::Blue,
-        Color::Cyan,
-        Color::Purple,
-    ];
-    fancy_print_guess(&guess);
+fn parse_str_to_vec_color(str_colors: String) -> Result<Vec<Color>, String> {
+    let mut vec_colors: Vec<Color> = Vec::new();
+    let mut maybe_error = None;
 
-    start_game();
+    for color in str_colors.trim().split(" ") {
+        match map_str_color_to_enum(color) {
+            Ok(result_color) => vec_colors.push(result_color),
+            Err(err_str_color) => {
+                maybe_error = Some(format!(
+                    "color with name {} not found. Retry :",
+                    err_str_color
+                ));
+            }
+        }
+    }
+    match maybe_error {
+        Some(error) => Err(error),
+        None => Ok(vec_colors),
+    }
+}
+
+fn get_str_colors_stdin() -> String {
+    use std::io::{stdin, stdout, Write};
+    let mut s = String::new();
+    let _ = stdout().flush();
+    stdin()
+        .read_line(&mut s)
+        .expect("Did not enter a correct string");
+    return s;
+}
+
+fn compare_current_colors_to_guess_colors(
+    current_colors: Vec<Color>,
+    guess_colors: Vec<Color>,
+) -> bool {
+    let mut result = true;
+
+    for (i, _color) in current_colors.iter().enumerate() {
+        if guess_colors[i] != *_color {
+            result = false;
+        }
+    }
+    return result;
+}
+
+fn start_game(guess_colors: Vec<Color>) {
+    let mut number_try = 1;
+    loop {
+        let str_colors = get_str_colors_stdin();
+        let result = parse_str_to_vec_color(str_colors);
+        match result {
+            Ok(vec_color) => {
+                fancy_print_guess(&vec_color);
+                if compare_current_colors_to_guess_colors(vec_color, guess_colors.clone()) {
+                    break;
+                }
+                number_try = number_try + 1;
+            }
+            Err(err_message) => println!("{}", err_message),
+        }
+    }
+    println!(
+        "Congrat ! You figure out the guess colors with {} try !",
+        number_try
+    );
+}
+
+fn main() {
+    let guess_colors = vec![Color::Blue, Color::Green, Color::White];
+    start_game(guess_colors);
 }

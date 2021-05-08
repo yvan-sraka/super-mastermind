@@ -1,5 +1,6 @@
 use ansi_term::Colour::{Blue, Cyan, Green, Purple, Red, White, Yellow, RGB};
 use ansi_term::{ANSIString, ANSIStrings};
+use rand::prelude::*;
 use std::fmt;
 
 #[derive(Debug, Clone, PartialEq)]
@@ -90,17 +91,20 @@ fn get_str_colors_stdin() -> String {
 
 fn number_of_not_well_placed_pawns(secret: &[Color], guess: &[Color]) -> i32 {
     let mut number_not_well_placed = 0;
-    let mut index_not_well_placed = Vec::<usize>::new();
+    let mut index_not_take_account = Vec::<usize>::new();
+
+    for (i, _guess_color) in guess.iter().enumerate() {
+        if _guess_color == &secret[i] {
+            index_not_take_account.push(i);
+        }
+    }
 
     for (i, _guess_color) in guess.iter().enumerate() {
         for (j, _secret_color) in secret.iter().enumerate() {
-            if i != j
-                && _guess_color == _secret_color
-                && &secret[i] != _guess_color
-                && !index_not_well_placed.contains(&j)
-            {
+            if i != j && _guess_color == _secret_color && !index_not_take_account.contains(&j) {
                 number_not_well_placed = number_not_well_placed + 1;
-                index_not_well_placed.push(j);
+                index_not_take_account.push(j);
+                break;
             }
         }
     }
@@ -122,7 +126,6 @@ fn compare_current_colors_to_secret_colors(
     current_colors: Vec<Color>,
     secret_colors: Vec<Color>,
 ) -> bool {
-    let mut result = true;
     let number_well_placed_pawns = number_of_well_placed_pawns(&secret_colors, &current_colors);
     if number_well_placed_pawns as usize == secret_colors.len() {
         return true;
@@ -134,17 +137,18 @@ fn compare_current_colors_to_secret_colors(
         "number not well placed pawns : {}",
         number_not_well_placed_pawns
     );
-    for (i, _color) in current_colors.iter().enumerate() {
-        if secret_colors[i] != *_color {
-            result = false;
-        }
-    }
-    return result;
+    return false;
 }
 
 fn start_game(secret_colors: Vec<Color>) {
     let mut number_try = 1;
     loop {
+        print!("List of colors :");
+        fancy_print_guess(&get_all_color_vec());
+        println!(
+            "Please enter {} fullname colors (example 'Blue') : ",
+            secret_colors.len()
+        );
         let str_colors = get_str_colors_stdin();
         let result = parse_str_to_vec_color(str_colors);
         match result {
@@ -157,7 +161,7 @@ fn start_game(secret_colors: Vec<Color>) {
             }
             Err(err_message) => println!("{}", err_message),
         }
-        println!("\n");
+        println!("");
     }
     println!(
         "Congrat ! You figure out the secret colors with {} try !",
@@ -165,9 +169,81 @@ fn start_game(secret_colors: Vec<Color>) {
     );
 }
 
+fn get_all_color_vec() -> Vec<Color> {
+    let mut color_vec = Vec::<Color>::new();
+    color_vec.push(Color::Blue);
+    color_vec.push(Color::Cyan);
+    color_vec.push(Color::Green);
+    color_vec.push(Color::Orange);
+    color_vec.push(Color::Purple);
+    color_vec.push(Color::Red);
+    color_vec.push(Color::White);
+    color_vec.push(Color::Yellow);
+    return color_vec;
+}
+
+fn create_secret_colors(mut number_secret_colors: i32) -> Vec<Color> {
+    println!("number_secret_colors : {}", number_secret_colors);
+    let mut secret_colors = Vec::<Color>::new();
+    let mut rng = rand::thread_rng();
+    let color_vec = get_all_color_vec();
+
+    let len_color_vec = color_vec.len() - 1;
+    let mut numbers: Vec<usize> = (0..len_color_vec).collect();
+
+    loop {
+        if number_secret_colors == 0 {
+            break;
+        }
+        numbers.shuffle(&mut rng);
+        secret_colors.push(color_vec[numbers[0]].clone());
+        number_secret_colors = number_secret_colors - 1;
+    }
+
+    return secret_colors;
+}
+
+fn prepare_secret_colors() -> Vec<Color> {
+    loop {
+        println!("Select number of secret colors to figure out.");
+        match get_str_colors_stdin().trim().parse::<i32>() {
+            Ok(number_secret_colors) => {
+                if number_secret_colors > 0 {
+                    return create_secret_colors(number_secret_colors);
+                }
+                println!("You have to select number of secret colors greater than 0");
+            }
+            Err(err_message) => println!(
+                "Not correct number, enter integer greater than 0. Error message : {}",
+                err_message
+            ),
+        }
+        println!("");
+    }
+}
+
+fn is_game_continue() -> bool {
+    loop {
+        println!("Continue ? Y / N");
+        let response = get_str_colors_stdin();
+        match response.trim() {
+            "Y" => return true,
+            "N" => return false,
+            _ => println!("Please enter Y or N letter"),
+        }
+    }
+}
+
 fn main() {
-    let secret_colors = vec![Color::Blue, Color::Green, Color::White];
-    start_game(secret_colors);
+    loop {
+        let secret_colors = prepare_secret_colors();
+        start_game(secret_colors);
+        if !is_game_continue() {
+            break;
+        }
+        println!("");
+    }
+    println!("Bye!")
 }
 
 #[cfg(test)]
@@ -221,5 +297,22 @@ mod tests {
         let guess_colors = vec![Color::Green, Color::Purple, Color::Green, Color::Purple];
         let result = number_of_not_well_placed_pawns(&secret_colors, &guess_colors);
         assert_eq!(2, result);
+    }
+
+    #[test]
+    fn when_guess_colors_contains_2_well_placed_colors_and_2_not_well_placed_colors_should_return_2(
+    ) {
+        let secret_colors = vec![Color::White, Color::Cyan, Color::Red, Color::Red];
+        let guess_colors = vec![Color::White, Color::Red, Color::Cyan, Color::Red];
+        let result = number_of_not_well_placed_pawns(&secret_colors, &guess_colors);
+        assert_eq!(2, result);
+    }
+
+    #[test]
+    fn when_guess_colors_is_full_same_colors_and_secret_have_2_of_this_color_should_return_0() {
+        let secret_colors = vec![Color::White, Color::Cyan, Color::White, Color::Red];
+        let guess_colors = vec![Color::White, Color::White, Color::White, Color::White];
+        let result = number_of_not_well_placed_pawns(&secret_colors, &guess_colors);
+        assert_eq!(0, result);
     }
 }

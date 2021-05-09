@@ -13,14 +13,37 @@ enum Color {
     Yellow,
 }
 
-fn number_of_well_placed_pawns(guess: &[Color], answer: &[Color]) -> i32 {
+fn number_of_well_placed_pawns(secret: &[Color], answer: &[Color]) -> i32 {
     let mut well_placed = 0;
     for (index, _) in answer.iter().enumerate() {
-        if answer[index] == guess[index] {
+        if answer[index] == secret[index] {
             well_placed = well_placed + 1;
         }
     }
     return well_placed; 
+}
+
+fn number_of_not_well_placed_pawns(secret: &[Color], answer: &[Color]) -> i32 {
+    let mut not_well_placed = 0;
+    let mut well_placed_table = [0;5];
+
+    for (i,x) in answer.iter().enumerate() {
+        if answer[i] == secret[i] {
+            well_placed_table[i] = 1;
+        }
+    }
+    
+    for (si,sx) in secret.iter().enumerate() {
+        if well_placed_table[si] == 0 {
+            for (gi,gx) in answer.iter().enumerate() {
+                if well_placed_table[gi] == 0 && si != gi && sx == gx {
+                    not_well_placed = not_well_placed + 1;
+                }
+            }
+        }
+
+    }
+    return not_well_placed;
 }
 
 fn user_answer(input: String) -> Vec<Color> {
@@ -70,12 +93,12 @@ fn fancy_print_guess(guess: &[Color]) {
 fn main() {
     let mut game = true;
     let mut times_played = 0;
-    let mut guess: Vec<Color> = Vec::new();
-    guess.push(Color::Red);
-    guess.push(Color::Black);
-    guess.push(Color::Green);
-    guess.push(Color::Cyan);
-    guess.push(Color::Blue);
+    let mut secret: Vec<Color> = Vec::new();
+    secret.push(Color::Red);
+    secret.push(Color::Black);
+    secret.push(Color::Green);
+    secret.push(Color::Cyan);
+    secret.push(Color::Blue);
 
     while game == true {
         let mut input: String = String::new();
@@ -97,11 +120,12 @@ fn main() {
 
         fancy_print_guess(&answer);
         
-        if is_answer(&guess, &answer) {
+        if is_answer(&secret, &answer) {
             println!("You found the good code with : {} tries", times_played);
             game = false;
         } else {
-            println!("colors well placed : {}", number_of_well_placed_pawns(&guess, &answer));
+            println!("colors well placed : {}", number_of_well_placed_pawns(&secret, &answer));
+            println!("And have {} colors not well placed !", number_of_not_well_placed_pawns(&secret, &answer));
         }
     }
 }

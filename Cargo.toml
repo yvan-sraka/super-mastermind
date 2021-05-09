@@ -1,9 +1,13 @@
 [package]
-name = "super-mastermind"
+name = "mastermind"
 version = "0.1.0"
-authors = []
+authors = ["Kelig MARTIN <martin.kelig@gmail.com>"]
 edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+ansi_term = "0.12.1"
+rand = "0.8.3"
+strum = "0.20"
+strum_macros = "0.20"

@@ -20,11 +20,12 @@ enum Color {
 #[derive(Debug, Clone, Table)]
 struct MastermindGuessResult {
     #[table(title = "Attempts", justify = "Justify::Right")]
-    pub tries_count: i32,
+    pub attempts: i32,
     #[table(title = "Guess")]
     pub guess: String,
     #[table(title = "Result")]
     pub result: String,
+    pub valid: bool,
     #[table(title = "Well placed pawns")]
     pub well_placed_pawns: i32,
     #[table(title = "Not well placed pawns")]
@@ -33,7 +34,7 @@ struct MastermindGuessResult {
 
 fn main() {
     let secret: Vec<Color> = vec![Color::Green, Color::Red, Color::Blue, Color::Purple];
-    let mut guess_count = 0;
+    let mut attempts = 0;
     let mut guess_results: Vec<MastermindGuessResult> = vec![];
 
     println!("Welcome to the mastermind!");
@@ -43,32 +44,24 @@ fn main() {
 
     io::stdout().flush().unwrap();
 
+    // Handle input until victory or max attempts
     for line in io::stdin().lock().lines() {
         let parsed_combination_guess = parse_colors(line.unwrap());
         match parsed_combination_guess {
             Ok(combination) => {
-                guess_count += 1;
-                let correct_guess = guess_match_solution(&combination, &secret);
-                let result = MastermindGuessResult {
-                    guess: fancy_print_guess(&combination),
-                    result: match correct_guess {
-                        true => "CORRECT! ✅ ".to_string(),
-                        false => "WRONG! ❌ ".to_string(),
-                    },
-                    well_placed_pawns: number_of_well_placed_pawns(&secret, &combination),
-                    not_well_placed_pawns: number_of_not_well_placed_pawns(&secret, &combination),
-                    tries_count: guess_count,
-                };
+                attempts += 1;
 
+                let result = handle_guess(&combination, &secret, attempts);
+
+                // Print table
                 guess_results.push(result.clone());
-
                 print_stdout(guess_results.with_title()).unwrap();
 
-                if correct_guess {
+                if result.valid {
                     println!("You beat the mastermind!");
                     break;
                 }
-                if result.tries_count >= 10 {
+                if result.attempts >= 10 {
                     println!("You failed to beat the mastermind in 10 attempts. Try again!");
                     break;
                 }
@@ -79,6 +72,21 @@ fn main() {
         print!("Enter guess ➜ ");
         io::stdout().flush().unwrap();
     }
+}
+
+fn handle_guess(combination: &[Color], secret: &[Color], attempts: i32) -> MastermindGuessResult {
+    let valid = guess_match_solution(&combination, &secret);
+    return MastermindGuessResult {
+        guess: fancy_print_guess(&combination),
+        valid,
+        result: match valid {
+            true => "CORRECT! ✅ ".to_string(),
+            false => "WRONG! ❌ ".to_string(),
+        },
+        well_placed_pawns: number_of_well_placed_pawns(&secret, &combination),
+        not_well_placed_pawns: number_of_not_well_placed_pawns(&secret, &combination),
+        attempts: attempts,
+    };
 }
 
 fn guess_match_solution(secret: &[Color], combination: &[Color]) -> bool {
@@ -113,6 +121,7 @@ fn fancy_print_guess(guess: &[Color]) -> String {
         }
     }
 
+    // Color are broken :'(
     return fancy_guess;
 }
 

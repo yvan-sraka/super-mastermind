@@ -114,7 +114,7 @@ fn handle_guess(combination: &[Color], secret: &[Color], attempts: i32) -> Maste
         },
         well_placed_pawns: number_of_well_placed_pawns(&secret, &combination),
         not_well_placed_pawns: number_of_not_well_placed_pawns(&secret, &combination),
-        attempts: attempts,
+        attempts,
     };
 }
 

@@ -1,7 +1,24 @@
 use ansi_term::Colour;
 use std::io;
+use std::io::Write;
+use rand::Rng;
+use std::fmt;
+
+#[derive(Debug)]
+enum Color{
+    Red,
+    Blue,
+    Green,
+    Yellow,
+    Purple,
+    White,
+    Cyan,
+    Maroon
+}
+
 
 fn main() {
+    let SECRET_LENGTH: i32 = 6;
     // let mut vec: Vec<Color> = Vec::new();
     // guess.push(Color::Red);
     // guess.push(Color::Blue);
@@ -17,11 +34,18 @@ fn main() {
     // print_vec(guess);
 
     //println!("{}", Colour::RGB(102, 51, 0).paint("M"));
-    fancy_print_guess(&[Color::Red, Color::Red, Color::Blue, Color::Yellow, Color::Green, Color::Maroon]);
+    let secret = generate_combi(SECRET_LENGTH);
+    let mut tries = 0;
+    let mut invalid_guess = false;
+    print!("Valid colors : ");
+    fancy_print_guess(&[Color::Red, Color::Blue, Color::Yellow, Color::Green, Color::Maroon, Color::Purple, Color::White, Color::Cyan]);
 
-    let mut input = String::new();
+
     loop{
         let mut guess = vec![];
+        let mut input = String::new();
+        print!("Enter your guess: ");
+        io::stdout().flush();
         io::stdin().read_line(&mut input);
         println!("Input : {}", input);
         let letters = input.trim();
@@ -35,30 +59,53 @@ fn main() {
                 'W' => Color::White,
                 'C' => Color::Cyan,
                 'M' => Color::Maroon,
-                _ => { 
+                _ => {
+                    invalid_guess = true; 
                     println!("Color {} is invalid", letter);
                     break;
                 }
             };
             guess.push(color);
         }
-        print_vec(guess);
+
+        if secret.len() != guess.len() {
+            invalid_guess = true;
+            println!("Secret combination has {} words. Please type the same amount of characters", SECRET_LENGTH)
+        }
+        if secret == vec_to_string(guess) {
+            println!("Congrats ! You guessed the secret combination !");
+            break;
+        }
+        if invalid_guess{
+            invalid_guess = false;
+        } else {
+            tries += 1;
+        }
+        println!("{}", tries);
+        // fancy_print_guess(&guess);
+        println!();
     }
 }
 
-#[derive(Debug)]
-enum Color{
-    Red,
-    Blue,
-    Green,
-    Yellow,
-    Purple,
-    White,
-    Cyan,
-    Maroon
+fn vec_to_string(guess: Vec<Color>) -> String{
+    let mut s: String = String::from("");
+    for color in guess {
+        match color{
+            Color::Red => s.push('R'),
+            Color::Blue => s.push('B'),
+            Color::Green => s.push('G'),
+            Color::Yellow => s.push('Y'),
+            Color::Purple => s.push('P'),
+            Color::White => s.push('W'),
+            Color::Cyan => s.push('C'),
+            Color::Maroon => s.push('M'),
+        }
+    }
+    return s;
 }
 
 fn print_vec(guess: Vec<Color>){
+    println!("Guess :");
     for color in guess {
         println!("{:?}", color);
     }
@@ -74,7 +121,7 @@ fn fancy_print_guess(guess: &[Color]){
             Color::Yellow => vec.push(Colour::Yellow.paint("Y")),
             Color::Purple => vec.push(Colour::Purple.paint("P")),
             Color::White => vec.push(Colour::White.paint("W")),
-            Color::Cyan => vec.push(Colour::Cyan.paint("I")),
+            Color::Cyan => vec.push(Colour::Cyan.paint("C")),
             Color::Maroon => vec.push(Colour::Fixed(89).paint("M"))
         }
     }
@@ -82,4 +129,18 @@ fn fancy_print_guess(guess: &[Color]){
         print!("{}", el);
     }
     println!();
+}
+
+fn generate_combi(range: i32) -> String{
+    const CHARSET: &str = "RBGYPWCM";
+    let vec: Vec<char> = CHARSET.chars().collect();
+    let mut rng = rand::thread_rng();
+    let secret: String = (0..range)
+        .map(|_| {
+            let idx = rng.gen_range(0..CHARSET.len());
+            vec[idx] as char
+        })
+        .collect();
+    println!("Secret : {}", secret);
+    return secret;
 }

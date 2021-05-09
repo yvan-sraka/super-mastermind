@@ -45,6 +45,7 @@ struct MastermindGuessResult {
     pub guess: String,
     #[table(title = "Result")]
     pub result: String,
+    #[table(skip)]
     pub valid: bool,
     #[table(title = "Well placed pawns")]
     pub well_placed_pawns: i32,

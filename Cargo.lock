@@ -42,16 +42,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "18794a8ad5b29321f790b55d93dfba91e125cb1a9edbd4f8e3150acc771c1a5e"
 
 [[package]]
-name = "mastermind"
-version = "0.1.0"
-dependencies = [
- "ansi_term",
- "rand",
- "strum",
- "strum_macros",
-]
-
-[[package]]
 name = "ppv-lite86"
 version = "0.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -131,6 +121,16 @@ dependencies = [
  "proc-macro2",
  "quote",
  "syn",
+]
+
+[[package]]
+name = "super-mastermind"
+version = "0.1.0"
+dependencies = [
+ "ansi_term",
+ "rand",
+ "strum",
+ "strum_macros",
 ]
 
 [[package]]

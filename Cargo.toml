@@ -1,5 +1,5 @@
 [package]
-name = "mastermind"
+name = "super-mastermind"
 version = "0.1.0"
 authors = ["Kelig MARTIN <martin.kelig@gmail.com>"]
 edition = "2018"

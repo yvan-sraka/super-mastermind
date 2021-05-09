@@ -1,7 +1,10 @@
 use ansi_term::Colour;
-use std::io::{self, BufRead, Write};
+use std::{
+    collections::HashMap,
+    io::{self, BufRead, Write},
+};
 
-#[derive(Debug)]
+#[derive(Debug, Copy, Clone)]
 enum Color {
     Green,
     Red,
@@ -24,7 +27,11 @@ fn main() {
 
     for line in io::stdin().lock().lines() {
         let guess = parse_colors(line.unwrap());
-        fancy_print_guess(&guess);
+        match guess {
+            Ok(g) => fancy_print_guess(&g),
+            Err(e) => eprintln!("{}", e),
+        }
+
         io::stdout().flush().unwrap();
     }
 }
@@ -42,22 +49,30 @@ fn fancy_print_guess(guess: &[Color]) {
             Color::White => print!("{}", Colour::White.paint("W")),
         }
     }
-    print!("{}", '\n');
+    println!();
 }
 
-fn parse_colors(raw_colors: String) -> Vec<Color> {
+fn parse_colors(raw_colors: String) -> Result<Vec<Color>, String> {
     let char_vec: Vec<char> = raw_colors.chars().collect();
     let mut guess: Vec<Color> = vec![];
 
-    for c in char_vec.iter() {
-        match c {
-            'R' => guess.push(Color::Red),
-            'G' => guess.push(Color::Green),
-            'B' => guess.push(Color::Blue),
-            '\n' => (),
-            _ => panic!(),
-        };
+    let mut colors_map: HashMap<char, Color> = HashMap::new();
+
+    colors_map.insert('R', Color::Red);
+    colors_map.insert('G', Color::Green);
+    colors_map.insert('B', Color::Blue);
+    colors_map.insert('Y', Color::Yellow);
+    colors_map.insert('P', Color::Purple);
+    colors_map.insert('C', Color::Cyan);
+    colors_map.insert('O', Color::Orange);
+    colors_map.insert('W', Color::White);
+
+    for color in char_vec.iter() {
+        if !colors_map.contains_key(color) {
+            return Err(format!("Invalid color: {}", color).to_string());
+        }
+        guess.push(colors_map[color]);
     }
 
-    return guess;
+    return Ok(guess);
 }

@@ -36,6 +36,9 @@ fn main() {
     guess.push(Color::Green);
     guess.push(Color::Cyan);
     guess.push(Color::Blue);
+    let mut game = true;
 
-    fancy_print_guess(&guess);
+    while game == true {
+        fancy_print_guess(&guess);
+    }
 }

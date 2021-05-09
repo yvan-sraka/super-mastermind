@@ -10,5 +10,10 @@ enum Color {
 }
 
 fn main() {
-    println!("Hello, world!");
+    let mut guess: Vec<Color> = Vec::new();
+    guess.push(Color::Black);
+    guess.push(Color::Blue);
+    guess.push(Color::Green);
+    guess.push(Color::Black);
+    guess.push(Color::Black);
 }

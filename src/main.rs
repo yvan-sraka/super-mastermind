@@ -40,8 +40,6 @@ fn main() {
                     Color::Purple
     ];
 
-    fancy_print_guess(&[Color::Red, Color::White, Color::Blue, Color::Black, Color::Green]);
-
     let mut count = 0;
 
 

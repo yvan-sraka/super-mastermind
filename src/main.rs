@@ -82,8 +82,15 @@ fn main() {
             tries += 1;
         }
         println!("{}", tries);
+
+        // let secretVec = string_to_vec(secret);
+
+        // let good = number_of_well_placed_pawns(&secretVec, &guess);
+        // let wrong = number_of_not_well_placed_pawns(&secretVec, &guess);
+
+        // println!("{} colors ok, {} colors wrong", good, wrong);
         // fancy_print_guess(&guess);
-        println!();
+        // println!();
     }
 }
 
@@ -98,6 +105,23 @@ fn number_of_well_placed_pawns(secret: &[Color], guess: &[Color]) -> i32 {
 
 fn number_of_not_well_placed_pawns(secret: &Vec<Color>, guess: &Vec<Color>) -> i32 {
     (secret.len() as i32) - number_of_well_placed_pawns(secret, guess)
+}
+
+fn string_to_vec(secret: String) -> Vec<Color>{
+    let mut vec: Vec<Color> = Vec::new();
+    for letter in secret.chars() {
+        match letter {
+            'R' => vec.push(Color::Red),
+            'B' => vec.push(Color::Blue),
+            'G' => vec.push(Color::Green),
+            'Y' => vec.push(Color::Yellow),
+            'P' => vec.push(Color::Purple),
+            'W' => vec.push(Color::White),
+            'C' => vec.push(Color::Cyan),
+            'M' => vec.push(Color::Maroon),
+        }
+    }
+    vec
 }
 
 fn vec_to_string(guess: Vec<Color>) -> String{

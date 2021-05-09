@@ -1,5 +1,7 @@
-use ansi_term::Colour;
 use std::io::Write;
+use rand::prelude::*;
+use ansi_term::Colour;
+
 
 #[derive(Debug, PartialEq)]
 enum Color {
@@ -11,6 +13,28 @@ enum Color {
     White,
     Purple,
     Yellow,
+}
+
+fn get_random_colors() -> Vec<Color> {
+    let mut rng = rand::thread_rng();
+    let mut secret: Vec<Color> = Vec::new();
+
+    for i in 0..5 {
+        let random_nb = rng.gen_range(0..7);
+        match random_nb {
+            0 => secret.push(Color::Red),
+            1 => secret.push(Color::Cyan),
+            2 => secret.push(Color::Blue),
+            3 => secret.push(Color::Black),
+            4 => secret.push(Color::Green),
+            5 => secret.push(Color::White),
+            6 => secret.push(Color::Purple),
+            7 => secret.push(Color::Yellow),
+            _ => (),
+        }
+    }
+
+    return secret;
 }
 
 fn number_of_well_placed_pawns(secret: &[Color], answer: &[Color]) -> i32 {
@@ -93,13 +117,8 @@ fn fancy_print_guess(guess: &[Color]) {
 fn main() {
     let mut game = true;
     let mut times_played = 0;
-    let mut secret: Vec<Color> = Vec::new();
-    secret.push(Color::Red);
-    secret.push(Color::Black);
-    secret.push(Color::Green);
-    secret.push(Color::Cyan);
-    secret.push(Color::Blue);
-
+    let mut secret: Vec<Color> = get_random_colors();
+    
     while game == true {
         let mut input: String = String::new();
         

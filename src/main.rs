@@ -96,6 +96,10 @@ fn number_of_well_placed_pawns(secret: &[Color], guess: &[Color]) -> i32 {
     .count() as i32
 }
 
+fn number_of_not_well_placed_pawns(secret: &Vec<Color>, guess: &Vec<Color>) -> i32 {
+    (secret.len() as i32) - number_of_well_placed_pawns(secret, guess)
+}
+
 fn vec_to_string(guess: Vec<Color>) -> String{
     let mut s: String = String::from("");
     for color in guess {

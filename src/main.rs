@@ -4,7 +4,7 @@ use std::{
     io::{self, BufRead, Write},
 };
 
-#[derive(Debug, Copy, Clone)]
+#[derive(Debug, Copy, Clone, PartialEq)]
 enum Color {
     Green,
     Red,
@@ -25,15 +25,30 @@ fn main() {
         Color::Cyan,
     ];
 
+    let mut guess_count = 0;
+
     for line in io::stdin().lock().lines() {
-        let guess = parse_colors(line.unwrap());
-        match guess {
-            Ok(g) => fancy_print_guess(&g),
-            Err(e) => eprintln!("{}", e),
+        let guessResult = parse_colors(line.unwrap());
+        match guessResult {
+            Ok(guess) => {
+                guess_count += 1;
+                fancy_print_guess(&guess);
+
+                if guess_match_solution(guess, solution.clone()) {
+                    println!("Correct!");
+                    break;
+                }
+                println!("Invalid guess!");
+            }
+            Err(err) => eprintln!("{}", err),
         }
 
         io::stdout().flush().unwrap();
     }
+}
+
+fn guess_match_solution(guess: Vec<Color>, solution: Vec<Color>) -> bool {
+    return guess.iter().zip(&solution).filter(|&(g, s)| g == s).count() == 0;
 }
 
 fn fancy_print_guess(guess: &[Color]) {

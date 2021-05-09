@@ -1,3 +1,4 @@
+#[derive(Debug)]
 enum Color {
     Red,
     Pink,
@@ -16,4 +17,6 @@ fn main() {
     guess.push(Color::Green);
     guess.push(Color::Black);
     guess.push(Color::Black);
+
+    println!("`{:?}`", guess);
 }

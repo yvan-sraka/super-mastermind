@@ -13,6 +13,16 @@ enum Color {
     Yellow,
 }
 
+fn number_of_well_placed_pawns(guess: &[Color], answer: &[Color]) -> i32 {
+    let mut well_placed = 0;
+    for (index, _) in answer.iter().enumerate() {
+        if answer[index] == guess[index] {
+            well_placed = well_placed + 1;
+        }
+    }
+    return well_placed; 
+}
+
 fn user_answer(input: String) -> Vec<Color> {
     let mut user_answer: Vec<Color> = Vec::new(); 
     for letter in input.chars() {
@@ -88,8 +98,10 @@ fn main() {
         fancy_print_guess(&answer);
         
         if is_answer(&guess, &answer) {
-            println!("you found the good code with : {} tries", times_played);
+            println!("You found the good code with : {} tries", times_played);
             game = false;
+        } else {
+            println!("colors well placed : {}", number_of_well_placed_pawns(&guess, &answer));
         }
     }
 }

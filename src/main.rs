@@ -1,4 +1,5 @@
 use ansi_term::Colour;
+use std::io::Write;
 
 #[derive(Debug)]
 enum Color {
@@ -39,6 +40,20 @@ fn main() {
     let mut game = true;
 
     while game == true {
-        fancy_print_guess(&guess);
+        let mut input: String = String::new();
+        
+        print!("Enter your asnwer:");
+
+        std::io::stdout().flush();
+        std::io::stdin().read_line(&mut input);
+        
+        input = String::from(input.trim());
+        
+        if input.len() != 5 {
+            println!("/!\\ You need to input only 5 colors (letters) /!\\");
+        } else {
+            fancy_print_guess(&guess);
+            game = false;
+        }
     }
 }

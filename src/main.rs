@@ -33,7 +33,7 @@ fn fancy_print_guess(guess: &Vec<Color>) {
     println!();
 }
 
-fn make_answer(line: String) -> Vec<Color> {
+fn make_answer(line: String, mut temptation: i32) -> (Vec<Color>, i32) {
     let mut answer :Vec<Color> = Vec::with_capacity(5);
     for character in line.chars() {
         match character {
@@ -45,10 +45,15 @@ fn make_answer(line: String) -> Vec<Color> {
             'B' => answer.push(Color::Blue),
             'G' => answer.push(Color::Green),
             'C' => answer.push(Color::Cyan),
-            other => println!("Error, {} doesn't represent any color here.", other)
+            other => {
+                println!("Error, {} doesn't represent any color here.", other);
+                return (answer, temptation);
+
+            }
         }
     }
-    answer
+    temptation +=1;
+    (answer, temptation)
 }
 
 fn number_of_well_placed_pawns(secret: &[Color], guess: &[Color]) -> i32 {
@@ -93,21 +98,28 @@ fn number_of_not_well_placed_pawns(secret: &[Color], guess: &[Color]) -> i32 {
 
 
 fn main() {
+    println!("MasterMind!!");
+    println!("Guess the five colors");
+    println!("M, W, Y, R, P, B, G or C");
     let secret = randomly_combination();
-    let guess: Vec<Color> = vec![];
-    //println!("{}", number_of_well_placed_pawns(&*secret, &*guess));
-    //println!("{}", number_of_not_well_placed_pawns(&*secret, &*guess));
-/*
+    let mut guess: Vec<Color> = vec![];
+    let mut temptation = 0;
+
     loop {
         let mut input =String::new();
         std::io::stdin().read_line(&mut input);
         input = String::from(input.trim());
-        guess = make_answer(input);
+        let (guess, temptation) = make_answer(input, *&temptation);
 
-
-
+        if number_of_well_placed_pawns(&*secret, &*guess) == 5 {
+            println!("You find it after {} temptations", temptation);
+            fancy_print_guess(&guess);
+            break;
+        } else {
+            println!("Try again please");
+            println!("Number of well placed pawns: {}", number_of_well_placed_pawns(&*secret, &*guess));
+            println!("Number of not well placed pawns: {}", number_of_not_well_placed_pawns(&*secret, &*guess));
+        }
     }
-
- */
 }
 

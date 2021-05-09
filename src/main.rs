@@ -4,6 +4,11 @@ use std::{
     collections::HashMap,
     io::{self, BufRead, Write},
 };
+extern crate rand;
+use rand::{
+    distributions::{Distribution, Standard},
+    Rng,
+};
 
 #[derive(Debug, Copy, Clone, PartialEq)]
 enum Color {
@@ -15,6 +20,21 @@ enum Color {
     Cyan,
     Orange,
     White,
+}
+
+impl Distribution<Color> for Standard {
+    fn sample<R: Rng + ?Sized>(&self, rng: &mut R) -> Color {
+        match rng.gen_range(0..=7) {
+            0 => Color::Green,
+            1 => Color::Red,
+            2 => Color::Blue,
+            3 => Color::Yellow,
+            4 => Color::Purple,
+            5 => Color::Cyan,
+            6 => Color::Orange,
+            _ => Color::White,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Table)]
@@ -33,7 +53,7 @@ struct MastermindGuessResult {
 }
 
 fn main() {
-    let secret: Vec<Color> = vec![Color::Green, Color::Red, Color::Blue, Color::Purple];
+    let secret = get_rand_secret();
     let mut attempts = 0;
     let mut guess_results: Vec<MastermindGuessResult> = vec![];
 
@@ -72,6 +92,15 @@ fn main() {
         print!("Enter guess ➜ ");
         io::stdout().flush().unwrap();
     }
+}
+
+fn get_rand_secret() -> Vec<Color> {
+    return vec![
+        rand::random(),
+        rand::random(),
+        rand::random(),
+        rand::random(),
+    ];
 }
 
 fn handle_guess(combination: &[Color], secret: &[Color], attempts: i32) -> MastermindGuessResult {

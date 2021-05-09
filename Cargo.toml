@@ -9,3 +9,4 @@ edition = "2018"
 [dependencies]
 ansi_term = "0.12"
 cli-table = "0.4"
+rand = "0.8.0"

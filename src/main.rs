@@ -4,7 +4,7 @@ use std::io::Write;
 use rand::Rng;
 use std::fmt;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 enum Color{
     Red,
     Blue,
@@ -85,6 +85,15 @@ fn main() {
         // fancy_print_guess(&guess);
         println!();
     }
+}
+
+
+fn number_of_well_placed_pawns(secret: &[Color], guess: &[Color]) -> i32 {
+    secret
+    .iter()
+    .enumerate()
+    .filter(|&(i, color)| guess[i] == *color)
+    .count() as i32
 }
 
 fn vec_to_string(guess: Vec<Color>) -> String{

@@ -9,8 +9,41 @@ use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
 type ColorParsingError = String;
 
+const BANNER: &str = 
+" ▄▄▄▄▄▄▄ ▄▄   ▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄      ▄▄   ▄▄ ▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄▄ ▄▄▄▄▄▄   ▄▄   ▄▄ ▄▄▄ ▄▄    ▄ ▄▄▄▄▄▄  
+█       █  █ █  █       █       █   ▄  █    █  █▄█  █      █       █       █       █   ▄  █ █  █▄█  █   █  █  █ █      █ 
+█  ▄▄▄▄▄█  █ █  █    ▄  █    ▄▄▄█  █ █ █    █       █  ▄   █  ▄▄▄▄▄█▄     ▄█    ▄▄▄█  █ █ █ █       █   █   █▄█ █  ▄    █
+█ █▄▄▄▄▄█  █▄█  █   █▄█ █   █▄▄▄█   █▄▄█▄   █       █ █▄█  █ █▄▄▄▄▄  █   █ █   █▄▄▄█   █▄▄█▄█       █   █       █ █ █   █
+█▄▄▄▄▄  █       █    ▄▄▄█    ▄▄▄█    ▄▄  █  █       █      █▄▄▄▄▄  █ █   █ █    ▄▄▄█    ▄▄  █       █   █  ▄    █ █▄█   █
+ ▄▄▄▄▄█ █       █   █   █   █▄▄▄█   █  █ █  █ ██▄██ █  ▄   █▄▄▄▄▄█ █ █   █ █   █▄▄▄█   █  █ █ ██▄██ █   █ █ █   █       █
+█▄▄▄▄▄▄▄█▄▄▄▄▄▄▄█▄▄▄█   █▄▄▄▄▄▄▄█▄▄▄█  █▄█  █▄█   █▄█▄█ █▄▄█▄▄▄▄▄▄▄█ █▄▄▄█ █▄▄▄▄▄▄▄█▄▄▄█  █▄█▄█   █▄█▄▄▄█▄█  █▄▄█▄▄▄▄▄▄█ 
+";
+
+const PARTY: &str = "
+-----------------------------------------------------
+   _                             .-.
+  / )  .-.    ___          __   (   )
+ ( (  (   ) .'___)        (__'-._) (
+  \\ '._) (,'.'               '.     '-.
+   '.      /  \"\\               '    -. '.
+     )    /   \\ \\   .-.   ,'.   )  (  ',_)    _
+   .'    (     \\ \\ (   \\ . .' .'    )    .-. ( \\
+  (  .''. '.    \\ \\|  .' .' ,',--, /    (   ) ) )
+   \\ \\   ', :    \\    .-'  ( (  ( (     _) (,' /
+    \\ \\   : :    )  / _     ' .  \\ \\  ,'      /
+  ,' ,'   : ;   /  /,' '.   /.'  / / ( (\\    (
+  '.'      \"   (    .-'. \\       ''   \\_)\\    \\
+                \\  |    \\ \\__             )    )
+              ___\\ |     \\___;           /  , /
+             /  ___)                    (  ( (
+             '.'                         ) ;) ;
+                                        (_/(_/
+----------------------------------------------------
+";
+
 trait FromLetter {
     fn from_letter(l: char) -> Result<Colors, ColorParsingError>;
+    fn to_char(&self) -> char;
 }
 
 impl FromLetter for Colors {
@@ -28,6 +61,19 @@ impl FromLetter for Colors {
                 "{} is not available as a color letter !",
                 l
             ))),
+        }
+    }
+
+    fn to_char(&self) -> char {
+        match self {
+            Colors::Blue =>'B',
+            Colors::Red => 'R',
+            Colors::Purple => 'P',
+            Colors::Green => 'G',
+            Colors::Yellow => 'Y',
+            Colors::Pink => 'I',
+            Colors::Cyan => 'C',
+            Colors::Magenta => 'M',
         }
     }
 }
@@ -59,15 +105,31 @@ fn fancy_print_color(color: &Colors) {
         Colors::Yellow => Color::Yellow,
     };
     if let Err(e) = stdout.set_color(ColorSpec::new().set_fg(Some(write_color))) {
-        println!("Error occured writing: {}", e.to_string());
+        println!("Error setting console color: {}", e.to_string());
     } else if let Err(e) = write!(&mut stdout, " ⦿ ") {
         println!("Error occured writing: {}", e.to_string());
     }
 
     if let Err(e) = stdout.set_color(ColorSpec::new().set_fg(Some(Color::White))) {
-        println!("Error occured writing: {}", e.to_string());
-    } else if let Err(e) = writeln!(&mut stdout, "") {
-        println!("Error occured writing: {}", e.to_string());
+        println!("Error setting color back to white: {}", e);
+    }
+}
+
+fn print_color_choices() {
+    let colors = vec![
+        Colors::Blue,
+        Colors::Cyan,
+        Colors::Green,
+        Colors::Magenta,
+        Colors::Pink,
+        Colors::Purple,
+        Colors::Red,
+        Colors::Yellow,
+    ];
+
+    for color in colors {
+        fancy_print_color(&color);
+        println!(" <==> {}", color.to_char());
     }
 }
 
@@ -115,28 +177,59 @@ fn parse_input(input: &String) -> Result<Vec<Colors>, InputErr> {
     return Ok(res);
 }
 
-fn main() {
-    // let guess = vec![
-    //     Colors::Blue,
-    //     Colors::Green,
-    //     Colors::Red,
-    //     Colors::Red,
-    //     Colors::Magenta,
-    // ];
-    // let guess_2 = vec![
-    //     Colors::Purple,
-    //     Colors::Yellow,
-    //     Colors::Pink,
-    //     Colors::Cyan,
-    //     Colors::Magenta,
-    // ];
+fn pretty_print_guess(guess: &[Colors]) {
+    print!("[");
+    for color in guess {
+        fancy_print_color(color);
+        print!(" ");
+    }
+    println!("]");
+}
 
-    let mut stop_flag = true;
+fn number_of_well_placed_pawns(secret: &[Colors], guess: &[Colors]) -> i32 {
+    let mut counter: i32 = 0;
+    for n in 0..secret.len() {
+        if secret[n] == guess[n] {
+            counter += 1;
+        }
+    }
+
+    return counter;
+}
+
+fn number_of_not_well_placed_pawns(secret: &[Colors], guess: &[Colors]) -> i32 {
+    let mut counter: i32 = 0;
+    for i in 0..secret.len() {
+        for j in 0..secret.len() {
+            if i != j && secret[i] == guess[j] {
+                counter += 1;
+            }
+        }
+    }
+
+    return counter;
+}
+
+fn main() {
+    let secret = vec![
+        Colors::Blue,
+        Colors::Green,
+        Colors::Red,
+        Colors::Red,
+        Colors::Magenta,
+    ];
+
+    let mut stop_flag = false;
 
     while !stop_flag {
+        println!("{}", BANNER);
+        pause_terminal();
+
+        let mut tries: u8 = 0;
         loop {
             clear_terminal();
-            println!("Please input a number.");
+            print_color_choices();
+            println!("Please input 5 letters using their corresponding letter above.");
             let stdin = io::stdin();
 
             let mut buffer = String::new();
@@ -149,10 +242,24 @@ fn main() {
             buffer.pop();
 
             let input = parse_input(&buffer);
+            
+            clear_terminal();
 
             if let Ok(array) = input {
-                println!("{:?}", array);
-                break;
+                let well_placed = number_of_well_placed_pawns(&secret, &array);
+
+                if well_placed < 5 {
+                    pretty_print_guess(&array);
+                    println!("You got {} well placed pawns !", well_placed);
+                    println!("You got {} wrong placed pawns !", number_of_not_well_placed_pawns(&secret, &array));
+                    tries += 1;
+                } else {
+                    println!("{}", PARTY);
+                    println!("Nailed it ! and in only {} times !", tries + 1);
+                    break;
+                }
+                
+                
             } else {
                 println!("{}", input.err().unwrap())
             }
@@ -161,6 +268,4 @@ fn main() {
         }
         prompt_stop(&mut stop_flag);
     }
-
-    fancy_print_color(&Colors::Blue);
 }

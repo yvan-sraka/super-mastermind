@@ -1,6 +1,5 @@
 
-
-#[derive(Debug)]
+#[derive(Debug, PartialEq)]
 pub enum Colors {
   Blue,
   Red,

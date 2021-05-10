@@ -7,6 +7,7 @@ use std::io::prelude::*;
 use std::io::Write;
 use termcolor::{Color, ColorChoice, ColorSpec, StandardStream, WriteColor};
 
+
 type ColorParsingError = String;
 
 const BANNER: &str = 
@@ -147,7 +148,6 @@ fn prompt_stop(stop_flag: &mut bool) {
 
     if buffer.eq_ignore_ascii_case("yes") || buffer.eq_ignore_ascii_case("y") {
         *stop_flag = true;
-        println!("stop flag should be set to true");
     }
 }
 
@@ -210,14 +210,33 @@ fn number_of_not_well_placed_pawns(secret: &[Colors], guess: &[Colors]) -> i32 {
     return counter;
 }
 
+fn generate_random_secret() -> Vec<Colors> {
+    
+    
+    let mut res = Vec::new();
+
+    for _ in 0..5 {
+        let choice: usize = rand::random::<usize>() % 8;
+
+        let color = match choice {
+            0 => Colors::Blue,
+            1 => Colors::Red,
+            2 => Colors::Purple,
+            3 => Colors::Green,
+            4 => Colors::Yellow,
+            5 => Colors::Pink,
+            6 => Colors::Cyan,
+            7 => Colors::Magenta,
+            _ => Colors::Blue // is never going to happen. how do I set this properly ? 
+        };
+
+        res.push(color);
+    }
+
+    res
+}
+
 fn main() {
-    let secret = vec![
-        Colors::Blue,
-        Colors::Green,
-        Colors::Red,
-        Colors::Red,
-        Colors::Magenta,
-    ];
 
     let mut stop_flag = false;
 
@@ -226,8 +245,15 @@ fn main() {
         pause_terminal();
 
         let mut tries: u8 = 0;
+
+        let secret = generate_random_secret();
+
         loop {
             clear_terminal();
+
+            // uncomment for god mode
+            // pretty_print_guess(&secret); 
+
             print_color_choices();
             println!("Please input 5 letters using their corresponding letter above.");
             let stdin = io::stdin();
@@ -253,6 +279,7 @@ fn main() {
                     println!("You got {} well placed pawns !", well_placed);
                     println!("You got {} wrong placed pawns !", number_of_not_well_placed_pawns(&secret, &array));
                     tries += 1;
+
                 } else {
                     println!("{}", PARTY);
                     println!("Nailed it ! and in only {} times !", tries + 1);

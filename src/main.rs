@@ -119,6 +119,7 @@ fn string_to_vec(secret: String) -> Vec<Color>{
             'W' => vec.push(Color::White),
             'C' => vec.push(Color::Cyan),
             'M' => vec.push(Color::Maroon),
+            _ => print!("rien")
         }
     }
     vec

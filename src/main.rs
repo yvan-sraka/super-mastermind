@@ -1,4 +1,4 @@
-use ansi_term::Colour;
+use ansi_term::{ANSIGenericString, Colour};
 use cli_table::{format::Justify, print_stdout, Table, WithTitle};
 use std::{
     collections::HashMap,
@@ -140,20 +140,18 @@ fn fancy_print_guess(guess: &[Color]) -> String {
 
     for c in guess.iter() {
         match c {
-            Color::Green => fancy_guess.push_str(&Colour::Green.paint("G")),
-            Color::Red => fancy_guess.push_str(&Colour::Red.paint("R")),
-            Color::Blue => fancy_guess.push_str(&Colour::Blue.paint("B")),
-            Color::Yellow => fancy_guess.push_str(&Colour::Yellow.paint("Y")),
-            Color::Purple => fancy_guess.push_str(&Colour::Purple.paint("P")),
-            Color::Cyan => fancy_guess.push_str(&Colour::Cyan.paint("C")),
-            Color::Orange => fancy_guess.push_str(&Colour::RGB(255, 165, 0).paint("O")),
-            Color::White => fancy_guess.push_str(&Colour::White.paint("W")),
+            Color::Green => fancy_guess.push_str(&Colour::Green.paint("G").to_string()),
+            Color::Red => fancy_guess.push_str(&Colour::Red.paint("R").to_string()),
+            Color::Blue => fancy_guess.push_str(&Colour::Blue.paint("B").to_string()),
+            Color::Yellow => fancy_guess.push_str(&Colour::Yellow.paint("Y").to_string()),
+            Color::Purple => fancy_guess.push_str(&Colour::Purple.paint("P").to_string()),
+            Color::Cyan => fancy_guess.push_str(&Colour::Cyan.paint("C").to_string()),
+            Color::Orange => fancy_guess.push_str(&Colour::RGB(255, 165, 0).paint("O").to_string()),
+            Color::White => fancy_guess.push_str(&Colour::White.paint("W").to_string()),
         }
     }
 
-    // Color are broken :'(
     return fancy_guess;
-}
 
 fn parse_colors(raw_colors: String) -> Result<Vec<Color>, String> {
     let colors: Vec<char> = raw_colors.chars().collect();

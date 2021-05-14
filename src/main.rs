@@ -1,4 +1,4 @@
-use ansi_term::{ANSIGenericString, Colour};
+use ansi_term::Colour;
 use cli_table::{format::Justify, print_stdout, Table, WithTitle};
 use std::{
     collections::HashMap,
@@ -152,6 +152,7 @@ fn fancy_print_guess(guess: &[Color]) -> String {
     }
 
     return fancy_guess;
+}
 
 fn parse_colors(raw_colors: String) -> Result<Vec<Color>, String> {
     let colors: Vec<char> = raw_colors.chars().collect();
